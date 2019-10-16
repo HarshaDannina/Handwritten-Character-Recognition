@@ -16,7 +16,7 @@ def main():
                     24: '24_bha', 25: '25_ma', 26: '26_yaw', 27: '27_ra', 28: '28_la', 29: '29_waw', 30: '30_motosaw',
                     31: '31_petchiryakha',32: '32_patalosaw', 33: '33_ha',
                     34: '34_chhya', 35: '35_tra', 36: '36_gya', 37: 'CHECK'}
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     Lower_green = np.array([110, 50, 50])
     Upper_green = np.array([130, 255, 255])
     pred_class=0
@@ -31,7 +31,9 @@ def main():
         blur = cv2.medianBlur(mask, 15)
         blur = cv2.GaussianBlur(blur, (5, 5), 0)
         thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-        cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[1]
+        tmp = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+        cnts = tmp[0] if len(tmp) == 2 else tmp[1]
+        #cnts = cv2.findContours(thresh.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[1]
         center = None
         if len(cnts) >= 1:
             contour = max(cnts, key=cv2.contourArea)
@@ -53,7 +55,8 @@ def main():
                 blur1 = cv2.medianBlur(blackboard_gray, 15)
                 blur1 = cv2.GaussianBlur(blur1, (5, 5), 0)
                 thresh1 = cv2.threshold(blur1, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
-                blackboard_cnts = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)[1]
+                blackboard_tmp = cv2.findContours(thresh1.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+                blackboard_cnts = blackboard_tmp[0] if len(blackboard_tmp) == 2 else blackboard_tmp[1]
                 if len(blackboard_cnts) >= 1:
                     cnt = max(blackboard_cnts, key=cv2.contourArea)
                     print(cv2.contourArea(cnt))
